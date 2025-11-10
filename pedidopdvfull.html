@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedido Otimizado | Hypera Farma</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #27ae60;
+            --background-color: #ecf0f1;
+            --surface-color: #ffffff;
+            --text-color: #34495e;
+            --light-text-color: #7f8c8d;
+            --border-color: #bdc3c7;
+            --shadow-light: rgba(255, 255, 255, 0.7);
+            --shadow-dark: rgba(210, 219, 227, 0.7);
+            --whatsapp-color: #25D366;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            margin: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            margin: 0;
+            font-size: 2.8em;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .header h1 span {
+            color: var(--secondary-color);
+            font-weight: 700;
+        }
+
+        .card {
+            background: var(--surface-color);
+            margin-bottom: 32px;
+            padding: 32px;
+            border-radius: 20px;
+            box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+        
+        .info-section label, .output-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: block;
+            color: var(--primary-color);
+            font-size: 0.9em;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .info-section input, #searchInput {
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: none;
+            box-sizing: border-box;
+            font-size: 1rem;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+            transition: all 0.2s ease-in-out;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .info-section input:focus, #searchInput:focus {
+            outline: none;
+            box-shadow: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light), 0 0 0 2px var(--secondary-color);
+        }
+        
+        #searchInput {
+            padding-left: 50px;
+        }
+
+        .search-icon {
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            color: var(--light-text-color);
+        }
+
+        .category-section {
+            background: var(--surface-color);
+            margin-bottom: 32px;
+            border-radius: 20px;
+            box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
+            overflow: hidden;
+        }
+        
+        .category-title {
+            background: var(--primary-color);
+            color: var(--surface-color);
+            padding: 20px 32px;
+            margin: 0;
+            font-size: 1.6em;
+            font-weight: 600;
+        }
+
+        .subcategory-title {
+            font-size: 1.3em;
+            color: var(--primary-color);
+            padding: 24px 32px 16px;
+            border-bottom: 1px solid #e0e5ea;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 16px 32px;
+            text-align: left;
+            border-bottom: 1px solid #e0e5ea;
+        }
+        
+        tbody tr {
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        
+        tbody tr.item-added {
+            background-color: #e8f7ee;
+        }
+        tbody tr.item-added .product-name {
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+        
+        thead th {
+            font-weight: 600;
+            color: var(--light-text-color);
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .product-name { font-weight: 500; }
+        .product-presentation { color: var(--light-text-color); font-size: 0.9em; }
+
+        .quantity-stepper { display: flex; align-items: center; justify-content: flex-end; }
+        .quantity-stepper button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            font-weight: 400;
+            width: 40px;
+            height: 40px;
+            color: var(--light-text-color);
+            transition: color 0.2s;
+            line-height: 40px;
+        }
+        .quantity-stepper button:hover { color: var(--primary-color); }
+        .quantity-stepper input[type="number"] {
+            width: 50px;
+            height: 40px;
+            text-align: center;
+            border: none;
+            -moz-appearance: textfield;
+            font-size: 1.1em;
+            font-weight: 600;
+            padding: 0;
+            background-color: transparent;
+            color: var(--text-color);
+        }
+        .quantity-stepper input::-webkit-outer-spin-button, .quantity-stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+        .output-textarea {
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Menlo', 'Consolas', monospace;
+            background-color: var(--background-color);
+            box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+        #headerOutput { height: 100px; }
+        #productsOutput { height: 280px; }
+
+
+        .button-group { display: flex; gap: 16px; }
+        .action-button {
+            flex-grow: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px 24px;
+            border: none;
+            color: var(--surface-color);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+        }
+        
+        .main-action-button {
+            width: 100%;
+            padding: 20px;
+            font-size: 1.2rem;
+            background: var(--secondary-color);
+        }
+        .main-action-button:hover { background: #23a257; box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light); }
+        .main-action-button:active { box-shadow: inset 4px 4px 8px #1e8449, inset -4px -4px 8px #2ecc71; }
+
+
+        .copy-button { background-color: var(--primary-color); }
+        .copy-button:hover { background-color: #34495e; box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light); }
+        .copy-button:active { box-shadow: inset 2px 2px 4px #2c3e50, inset -2px -2px 4px #51708f; }
+
+        .whatsapp-button { background-color: var(--whatsapp-color); }
+        .whatsapp-button:hover { background-color: #20b859; box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light); }
+        .whatsapp-button:active { box-shadow: inset 2px 2px 4px #1a9247, inset -2px -2px 4px #2bda71; }
+        
+        .hidden-buttons { display: none; }
+
+
+        #scrollTopBtn {
+            display: none;
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 99;
+            border: none;
+            outline: none;
+            background-color: var(--surface-color);
+            color: var(--primary-color);
+            cursor: pointer;
+            padding: 0;
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            font-size: 24px;
+            box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+            transition: all 0.3s ease;
+        }
+        #scrollTopBtn:hover { transform: scale(1.1); }
+        
+        .toast-notification {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary-color);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 10px;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s, visibility 0.5s, transform 0.5s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .toast-notification.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -10px);
+        }
+        
+        @media (max-width: 992px) {
+            .info-section {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container { padding: 16px; }
+            .header h1 { font-size: 2.2em; }
+            .card, .category-section { padding: 24px; border-radius: 16px; }
+            .category-title { padding: 16px 24px; font-size: 1.4em; }
+            .subcategory-title { padding: 20px 24px 12px; font-size: 1.2em; }
+            
+            thead { display: none; }
+            tr { 
+                display: grid;
+                grid-template-areas: "name name" "presentation quantity";
+                grid-template-columns: 1fr auto;
+                gap: 8px 16px;
+                padding: 16px 0;
+            }
+            td {
+                padding: 0;
+                border: none;
+                display: flex;
+                align-items: center;
+            }
+            .product-name-cell { grid-area: name; }
+            .product-presentation-cell { grid-area: presentation; justify-content: flex-start; }
+            .product-quantity-cell { grid-area: quantity; }
+
+            .product-name { font-size: 1.1em; }
+            .quantity-stepper { justify-content: flex-end; }
+            
+            .info-section { grid-template-columns: 1fr; }
+            .button-group { flex-direction: column; }
+        }
+
+    </style>
+</head>
+<body>
+    <div id="toast" class="toast-notification">Texto copiado!</div>
+    <button id="scrollTopBtn" title="Voltar ao topo">&#8679;</button>
+
+    <div class="container">
+        <header class="header">
+            <h1>Hypera<span>Farma</span></h1>
+        </header>
+
+        <form id="orderForm" onsubmit="return false;">
+            
+            <section class="card">
+                <div class="info-section">
+                    <div>
+                        <label for="pharmacyName">Nome da Farmácia</label>
+                        <input type="text" id="pharmacyName" placeholder="Ex: Farmácia Central">
+                    </div>
+                     <div>
+                        <label for="cnpj">CNPJ</label>
+                        <input type="text" id="cnpj" placeholder="00.000.000/0000-00">
+                    </div>
+                </div>
+            </section>
+            
+            <div class="card">
+                <label for="searchInput">Pesquisar Produto</label>
+                <div class="input-wrapper">
+                    <span class="search-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                        </svg>
+                    </span>
+                    <input type="text" id="searchInput" placeholder="Digite o nome do produto...">
+                </div>
+            </div>
+
+            <section class="category-section">
+                <h2 class="category-title">Linha PDV</h2>
+                
+                <h3 class="subcategory-title">Descongestionantes e Antialérgicos</h3>
+                <table>
+                     <thead><tr><th>Produto</th><th>Apresentação</th><th style="text-align: right;">Quantidade</th></tr></thead>
+                    <tbody>
+                        <tr><td class="product-name-cell"><div class="product-name">Alektos</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="20mg 15 Comp.">Cbr 20mg Ct Bl x 15</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Alektos</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="20mg 20 Comp.">20mg Comprimidos 20un</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Alektos</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="20mg 30 Comp.">Cbr 20mg Ct Bl x 30</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Alektos Ped</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Sol. 120ml">Or Sol Fr 120ml - Novo</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Amome</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Spray 50mcg 60 Doses">Spr Nasal 50mcg 60</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Amome</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Spray 50mcg 120 Doses">Spr Nasal 50mcg 120</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Celestamine</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Gotas 20ml">Gts 20ml Or - Novo</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Celestamine</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Xpe S/ Açúcar 120ml">Xarope Sem Açucar 120ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Descon</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="12 Comp. LP">Ct Bl x 12 Cprv Lib Prol</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Descon</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Gotas 20ml">Sol Gotas Fr x 20ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Descon</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Xarope 120ml">Xpe Ct Fr x 120 Ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Rinosoro</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="0.9% Gts 30ml">Gotas Frasco 30 Ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Rinosoro</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="0.9% Spray 50ml">0.9% Sic Spray Fr 50 Ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Rinosoro</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="3% Spray 50ml">3% Sic Spray Fr 50ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Rinosoro</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="3% Sic XT Spray 50ml">3% Sic Xt Sol Spray Fr 50ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Rinosoro</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Sic 3% Spray 50ml Novo">Sic 3% Sol Spr Ct Fr Pl 50ml - Novo</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Rinosoro</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="0.9% Sic XT Spray 50ml">0.9% Sic Xt Sol Spray Fr 50ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Rinosoro</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="XT Gts 30ml">Xt Gts x 1 Fr Plas 30ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Rinosoro</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Jet 0.9% 100ml">Jet 0.9% Spr Nasal Fr 100ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Rinosoro</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Jet XT 0.9% 100ml">Xt Jet 0.9% Spr Nasal Fr 100ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Rinosoro Inf</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Inf 0.9% Spray 50ml">Inf 0.9% Sic Spray Fr 50 Ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Rinosoro Inf</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Sic XT Inf Spray 50ml">0.9% Sic Xt Inf S Spray Fr 50ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Rinosoro Jet Inf</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Jet Inf. 0.9%">Jet Inf 0.9%</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Rinosoro Jet Inf</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Jet XT Inf. 0.9% 100ml">Jet Xt Inf 0.9% Spr Nasal Fr 100ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Rinosoro Alto Vol</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="30 Sach.">Alto Volume 30 Saches</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Rinosoro Alto Vol</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Kit 30 Sach+Fr">C+30 Sach+fr 250ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Rinosoro AV Inf</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="15 Sach.">0.9% Po P Sol 15 Saches</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Rinosoro AV Inf</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Kit 15env+fr 120ml">0.9% Po P Sol 15 En V 120ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Rinosoro AV Baby</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Refil 15 Sach.">Po Sol Refil 15 Sch</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Rinosoro AV Baby</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Kit 15sch+fr60+ser20">15 Sch+fr 60ml+ser 20ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Rizi</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="5mg 10 Comp.">5mg Ct Bl 10 Cprs Rev</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Rizi</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="5mg 30 Comp.">5mg Ct Bl 30 Cprs Rev</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Rizi M</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="10+5mg 7 Comp.">10mg + 5mg Ct Bl 7 Comp Rev</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Rizi M</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="10+5mg 14 Comp.">10mg + 5mg Ct Bl 14 Cprs Rev</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                    </tbody>
+                </table>
+                
+                <h3 class="subcategory-title">Gastrointestinais e Analgésicos</h3>
+                <table>
+                     <thead><tr><th>Produto</th><th>Apresentação</th><th style="text-align: right;">Quantidade</th></tr></thead>
+                     <tbody>
+                        <tr><td class="product-name-cell"><div class="product-name">Alivium</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="400mg 4 Cáp. Mole">400mg Ct Bl x 4 Cap Mole</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Alivium</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="400mg 8 Cáp. Mole">400mg Ct Bl 8 Cap Mole</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Alivium</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="400mg 10 Cáp. Mole">400mg Ct Bl 10 Cap Mole</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Alivium</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="400mg 20 Cáp. Mole">400mg Ct Bl 20 Caps Mole</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Alivium</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="600mg 10 Cáp. Gel">600mg Cap Gel Mole Ct Bl 2x5</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Alivium</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Gotas 50mg/ml 20ml">Gts 50mg/ml Cgt Fr 20ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Alivium</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Gotas 100mg/ml 20ml">Gotas 20ml 100mg/ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Alivium GC</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Gotas 200mg/ml 20ml">GC 200mg/mL Gotas 20mL</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Alivium</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Gotas 50mg/ml 30ml">Gotas 30ml 50mg/ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Alivium</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Susp. 30mg/ml 100ml">Suspensao Oral 30mg/ml Fr 100ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Dramin B6</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Gotas 30ml">Gts Or Fr 30ml - Novo</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Dramin B6</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="30 Comp.">30 Cpr</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Dramin Capsgel</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="25mg 10 Cáp.">25mg x 10 - Novo</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Dramin Capsgel</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="50mg 10 Cáp.">50mg x 10 - Novo</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Lisador</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="16 Comp.">Comprimidos 16un</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Lisador</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="24 Comp.">Comprimidos 24un</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Lisador Cólica</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Cólica 20 Comp.">Comprimidos 20un</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Lisador</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Gotas 20ml">Gts Frasco 20</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Lisador Dip</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="1g 10 Comp.">1g Ct Bl 10 Comp</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Lisador Dip</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="1g 20 Comp.">1g Ct Bl 20 Comp</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Lisador Dip</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Gotas 20ml">50mg/ml Sol Or Fr x 20ml - Novo</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Lisador Muscular</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="600mg 4 Comp.">600mg - 4 Comprimidos</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Lisador Muscular</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="600mg 16 Comp.">600mg - 16 Comprimidos</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Maxsulid</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="400mg 10 Comp.">400mg Ct 10 Comp</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Maxsulid</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="400mg 30 Comp.">400mg Ct 30 Comp</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Ondif</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="4mg 10 Filmes">4mg Ct Env x 10 Filmes</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Ondif</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="8mg 10 Filmes">8mg Ct Env x 10 Filmes</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Pratium</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="140mg Gts 15ml">140mg Susp Gts 15ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                    </tbody>
+                </table>
+                 
+                <h3 class="subcategory-title">Vitaminas e Suplementos</h3>
+                <table>
+                     <thead><tr><th>Produto</th><th>Apresentação</th><th style="text-align: right;">Quantidade</th></tr></thead>
+                     <tbody>
+                        <tr><td class="product-name-cell"><div class="product-name">Melatonum</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Complete 30 Cáps.">Complete Fr x 30 Caps</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Melatonum</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Gotas 30ml">Sol Oral Ct Fr 30ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Melatonum Max</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Gotas Menta 30ml">Sol Oral Ct Fr 30ml Menta</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                     </tbody>
+                </table>
+            </section>
+            
+            <section class="category-section">
+                <h2 class="category-title">Linha Prescrição</h2>
+                
+                <h3 class="subcategory-title">Dores e Inflamações</h3>
+                <table>
+                    <thead><tr><th>Produto</th><th>Apresentação</th><th style="text-align: right;">Quantidade</th></tr></thead>
+                    <tbody>
+                        <tr><td class="product-name-cell"><div class="product-name">Diprospan</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Ampola 6x1ml">Ampola 6x1ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Diprospan</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Injetável 1ml">Injetavel 1ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Diprospan</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Seringa Hypak 1ml">1mL Seringa Preenchida Hypak</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Ecoxe</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="60mg 7 Comp.">60mg Comprimidos 7un</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Ecoxe</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="60mg 14 Comp.">60mg Ct Bl x 14 Cprv</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Ecoxe</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="90mg 7 Comp.">90mg Ct Bl x 7 Cprv</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Ecoxe</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="90mg 14 Comp.">90mg Ct Bl x 14 Cprv</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Hexomedine</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="50mg/ml Aerossol">50mg/ml Sol Aer M15 Br - Novo</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Kelac</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="10mg 4 Sublingual">10mg Comp Sublingual 4un</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Kelac</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="10mg 10 Sublingual">10mg Ct Bl x 10 Cp Subl</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Kelac</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="10mg 20 Sublingual">10mg Ct Bl x 20 Cp Subl</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Novotram</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="100mg/ml Gts 10ml">100mg/ml A-2 Fr 10ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Novotram</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="50mg 10 Cáp.">50mg A-2 Ct Bl 10 Cap</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Novotram</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="50mg 20 Cáp.">50mg A-2 Ct Bl 20 Cap</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Novotram Par</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="PAR 10 Comp.">Ct Bl 10 Cprv</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Novotram Par</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="PAR 20 Comp.">Ct Bl 20 Cprv</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Predsim</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="5mg 10 Comp.">5mg Blst x 10 Comp</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Predsim</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="5mg 20 Comp.">5mg Blst 20 Comp.</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Predsim</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="10mg 10 Comp.">10mg Cprv Ct Bl 10</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Predsim</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="20mg 10 Comp.">20mg Ct Bl 10 Comp</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Predsim</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="20mg 20 Comp.">20mg Ct Bl 20 Comp</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Predsim</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="40mg 10 Comp.">40mg Ct Bl 10 Comp</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Predsim</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Gotas 20ml">Gts 20ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Predsim</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Solução 60ml">Solução Fr. 60ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Predsim</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Solução 100ml">Solucao Fr 100ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                    </tbody>
+                </table>
+
+                <h3 class="subcategory-title">Tratamentos Gastrointestinais</h3>
+                <table>
+                    <thead><tr><th>Produto</th><th>Apresentação</th><th style="text-align: right;">Quantidade</th></tr></thead>
+                    <tbody>
+                        <tr><td class="product-name-cell"><div class="product-name">Esol Xr</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="20mg 28 Cáps.">20mg Cápsulas Duras 28un</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Esol Xr</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="40mg 28 Cáps.">40mg Frx28 Caps Dura Lib</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                    </tbody>
+                </table>
+                
+                <h3 class="subcategory-title">Tratamentos Dermatológicos</h3>
+                <table>
+                    <thead><tr><th>Produto</th><th>Apresentação</th><th style="text-align: right;">Quantidade</th></tr></thead>
+                    <tbody>
+                        <tr><td class="product-name-cell"><div class="product-name">Alektos Derm</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Bisnaga 200ml">Bg 200ml</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Alektos Derm</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Loção 450ml">Loção Hidratante 450mL</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Quadriderm</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Creme 20g">Creme 20g</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Quadriderm</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Pomada 20g">Pomada 20g</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Quadriderm</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Creme Alum. 20g">Cr Ct Bg Alum 20g</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                        <tr><td class="product-name-cell"><div class="product-name">Quadriderm</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="Pomada Alum. 20g">Pom Ct Bg Alum 20g</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                    </tbody>
+                </table>
+                <h3 class="subcategory-title">Outros Tratamentos</h3>
+                <table>
+                    <thead><tr><th>Produto</th><th>Apresentação</th><th style="text-align: right;">Quantidade</th></tr></thead>
+                    <tbody>
+                        <tr><td class="product-name-cell"><div class="product-name">Ammy</div></td><td class="product-presentation-cell"><div class="product-presentation" data-summary="4mg 24 Comp.">4mg Cprv Ct Bl x 24</div></td><td class="product-quantity-cell"><div class="quantity-stepper"><button type="button" class="minus-btn">-</button><input type="number" min="0" value="0" readonly><button type="button" class="plus-btn">+</button></div></td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="card action-section">
+                <button type="button" class="action-button main-action-button" onclick="generateOrder()" style="margin-bottom: 32px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-down-circle-fill" viewBox="0 0 16 16">
+                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v5.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V4.5z"/>
+                    </svg>
+                    <span>Gerar Pedido</span>
+                </button>
+                
+                <div id="output-section" class="hidden-buttons">
+                    <div class="output-container">
+                        <label for="headerOutput" class="output-label">Cabeçalho do Pedido</label>
+                        <textarea id="headerOutput" class="output-textarea" readonly></textarea>
+                        <div class="button-group" id="headerButtons">
+                            <button type="button" class="action-button copy-button" id="copyHeaderBtn">
+                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M13.5 1a1.5 1.5 0 0 1 1.5 1.5v9.5a1.5 1.5 0 0 1-1.5-1.5h-11A1.5 1.5 0 0 1 1 12V2.5A1.5 1.5 0 0 1 2.5 1h11zm-11-1A2.5 2.5 0 0 0 0 2.5v9.5A2.5 2.5 0 0 0 2.5 14h11a2.5 2.5 0 0 0 2.5-2.5v-9.5A2.5 2.5 0 0 0 13.5 0h-11z"/><path d="M15.5 2a.5.5 0 0 0-.5-.5h-10a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5v-1z"/></svg>
+                                <span>Copiar</span>
+                            </button>
+                            <button type="button" class="action-button whatsapp-button" id="whatsappHeaderBtn">
+                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>
+                                <span>WhatsApp</span>
+                            </button>
+                        </div>
+                    </div>
+        
+                    <div class="output-container">
+                         <label for="productsOutput" class="output-label">Produtos do Pedido</label>
+                         <textarea id="productsOutput" class="output-textarea" readonly></textarea>
+                         <div class="button-group" id="productButtons">
+                             <button type="button" class="action-button copy-button" id="copyProductsBtn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M13.5 1a1.5 1.5 0 0 1 1.5 1.5v9.5a1.5 1.5 0 0 1-1.5-1.5h-11A1.5 1.5 0 0 1 1 12V2.5A1.5 1.5 0 0 1 2.5 1h11zm-11-1A2.5 2.5 0 0 0 0 2.5v9.5A2.5 2.5 0 0 0 2.5 14h11a2.5 2.5 0 0 0 2.5-2.5v-9.5A2.5 2.5 0 0 0 13.5 0h-11z"/><path d="M15.5 2a.5.5 0 0 0-.5-.5h-10a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5v-1z"/></svg>
+                                 <span>Copiar</span>
+                             </button>
+                             <button type="button" class="action-button whatsapp-button" id="whatsappProductsBtn">
+                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>
+                                 <span>WhatsApp</span>
+                             </button>
+                         </div>
+                    </div>
+                </div>
+            </section>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('orderForm');
+            const searchInput = document.getElementById('searchInput');
+            const scrollTopBtn = document.getElementById('scrollTopBtn');
+            const toast = document.getElementById('toast');
+            
+            const copyHeaderBtn = document.getElementById('copyHeaderBtn');
+            const whatsappHeaderBtn = document.getElementById('whatsappHeaderBtn');
+            const copyProductsBtn = document.getElementById('copyProductsBtn');
+            const whatsappProductsBtn = document.getElementById('whatsappProductsBtn');
+            const outputSection = document.getElementById('output-section');
+
+            const handleQuantityChange = (event) => {
+                const target = event.target;
+                if (target.classList.contains('minus-btn') || target.classList.contains('plus-btn')) {
+                    const stepper = target.closest('.quantity-stepper');
+                    const input = stepper.querySelector('input[type="number"]');
+                    const row = stepper.closest('tr');
+                    let currentValue = parseInt(input.value);
+
+                    if (target.classList.contains('minus-btn') && currentValue > 0) {
+                        input.value = currentValue - 1;
+                    } else if (target.classList.contains('plus-btn')) {
+                        input.value = currentValue + 1;
+                    }
+                    
+                    row.classList.toggle('item-added', input.value > 0);
+                }
+            };
+
+            const handleSearch = () => {
+                const filter = searchInput.value.toUpperCase();
+                document.querySelectorAll('.category-section').forEach(category => {
+                    category.querySelectorAll('.subcategory-title').forEach(subcategory => {
+                        const table = subcategory.nextElementSibling;
+                        if (!table || table.tagName !== 'TABLE') return;
+                        let subcategoryVisible = false;
+                        table.querySelectorAll('tbody tr').forEach(row => {
+                            const productNameCell = row.querySelector('.product-name-cell .product-name');
+                            if (productNameCell) {
+                                const productName = productNameCell.textContent.toUpperCase();
+                                const productPresentation = row.querySelector('.product-presentation').textContent.toUpperCase();
+                                if (productName.includes(filter) || productPresentation.includes(filter)) {
+                                    row.style.display = "";
+                                    subcategoryVisible = true;
+                                } else {
+                                    row.style.display = "none";
+                                }
+                            }
+                        });
+                        subcategory.style.display = subcategoryVisible ? "" : "none";
+                    });
+                });
+            };
+
+            const handleScroll = () => {
+                scrollTopBtn.style.display = (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) ? "block" : "none";
+            };
+
+            const copyToClipboard = (elementId, message) => {
+                const textToCopy = document.getElementById(elementId).value;
+                if (!textToCopy) return;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    showToast(message);
+                }).catch(err => {
+                    console.error('Falha ao copiar texto: ', err);
+                    showToast('Erro ao copiar!');
+                });
+            };
+
+            const sendToWhatsApp = (elementId) => {
+                const text = document.getElementById(elementId).value;
+                if (text) {
+                    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+                    window.open(whatsappUrl, '_blank');
+                }
+            };
+
+            const showToast = (message) => {
+                toast.textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2500);
+            };
+
+            form.addEventListener('click', handleQuantityChange);
+            searchInput.addEventListener('keyup', handleSearch);
+            window.addEventListener('scroll', handleScroll);
+            scrollTopBtn.addEventListener('click', () => window.scrollTo({top: 0, behavior: 'smooth'}));
+
+            copyHeaderBtn.addEventListener('click', () => copyToClipboard('headerOutput', 'Cabeçalho copiado!'));
+            whatsappHeaderBtn.addEventListener('click', () => sendToWhatsApp('headerOutput'));
+            copyProductsBtn.addEventListener('click', () => copyToClipboard('productsOutput', 'Lista de produtos copiada!'));
+            whatsappProductsBtn.addEventListener('click', () => sendToWhatsApp('productsOutput'));
+        });
+
+        function generateOrder() {
+            const pharmacyName = document.getElementById('pharmacyName').value;
+            const cnpj = document.getElementById('cnpj').value;
+            
+            const headerOutput = document.getElementById('headerOutput');
+            const productsOutput = document.getElementById('productsOutput');
+            const outputSection = document.getElementById('output-section');
+
+            if (!pharmacyName || !cnpj) {
+                alert('Por favor, preencha o Nome da Farmácia e o CNPJ.');
+                return;
+            }
+
+            const headerText = `*Farmácia:* ${pharmacyName}\n*CNPJ:* ${cnpj}`;
+            headerOutput.value = headerText;
+
+            let productsText = "";
+            let hasProducts = false;
+            document.querySelectorAll('tbody tr').forEach(row => {
+                const input = row.querySelector('.quantity-stepper input[type="number"]');
+                if (input && parseInt(input.value) > 0) {
+                    hasProducts = true;
+                    const quantity = input.value;
+                    const productName = row.querySelector('.product-name').textContent;
+                    const presentationCell = row.querySelector('.product-presentation');
+                    const presentation = presentationCell.dataset.summary || presentationCell.textContent;
+                    productsText += `- ${productName} (${presentation}): *${quantity}*\n`;
+                }
+            });
+
+            if (hasProducts) {
+                productsOutput.value = productsText;
+                outputSection.classList.remove('hidden-buttons');
+            } else {
+                alert('Nenhum produto foi selecionado. Adicione uma quantidade para gerar o pedido.');
+                productsOutput.value = '';
+                headerOutput.value = '';
+                outputSection.classList.add('hidden-buttons');
+            }
+        }
+    </script>
+
+</body>
+</html>
